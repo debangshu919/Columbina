@@ -1,4 +1,4 @@
-.PHONY: run test lint format docker-build docker-up docker-down
+.PHONY: run lint format docker-build docker-up docker-down
 
 lint:
 	flake8 src
@@ -8,10 +8,7 @@ format:
 	isort src
 
 run:
-	uv run main.py
-	
-test:
-	pytest -v
+	uv run src/main.py
 	
 docker-build:
 	docker build -t columbina .
