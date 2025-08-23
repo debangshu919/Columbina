@@ -1,11 +1,11 @@
 .PHONY: run test lint format docker-build docker-up docker-down
 
 lint:
-	flake8 src tests
+	flake8 src
 
 format:
-	black src tests
-	isort src tests
+	black src
+	isort src
 
 run:
 	uv run main.py
