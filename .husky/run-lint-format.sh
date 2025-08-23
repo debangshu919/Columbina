@@ -1,5 +1,4 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+#!/usr/bin/env sh
 
 # Get staged Python files in src/ or tests/ directories
 files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^(src)/.*\.py$')
