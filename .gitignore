@@ -9,6 +9,9 @@ wheels/
 # Virtual environments
 .venv
 
+# Test files
+src/test.py
+
 # Secrets
 .env*
 !.env.example
