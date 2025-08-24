@@ -14,15 +14,13 @@ class SlashPing(commands.Cog):
 
         # Get color based on latency
         if latency < 500:
-            color_values = CONFIG["colors"]["success"]
+            color = CONFIG["colors"]["success"]
         else:
-            color_values = CONFIG["colors"]["warning"]
+            color = CONFIG["colors"]["warning"]
 
         embed = discord.Embed(
             title="Pong",
-            color=discord.Color.from_rgb(
-                color_values[0], color_values[1], color_values[2]
-            ),
+            color=discord.Color.from_rgb(color[0], color[1], color[2]),
         )
         embed.add_field(name="Bot Latency", value=f"```{latency} ms```")
         embed.set_footer(
