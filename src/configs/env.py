@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv(".env")
 
 # Get environment (defaults to "development")
-ENV = os.getenv("ENVIRONMENT", "development")
+ENV = os.getenv("COLUMBINA_ENV", "development")
 
 # Pick correct .env file
 if ENV == "production":
