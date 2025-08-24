@@ -44,7 +44,13 @@ class About(commands.Cog):
             url=CONFIG["server"]["invite"],
             style=discord.ButtonStyle.link,
         )
+        invite_button = discord.ui.Button(
+            label="Invite Bot",
+            url="https://discord.com/oauth2/authorize?client_id=1407769283148251248&permissions=8&integration_type=0&scope=bot",
+            style=discord.ButtonStyle.link,
+        )
         view.add_item(button)
+        view.add_item(invite_button)
 
         return await ctx.send(
             content="-# ⓘ You can join our **Discord Server** to give feedback.",
