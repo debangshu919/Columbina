@@ -1,0 +1,34 @@
+commands:
+  - name: avatar
+    description: Displays the avatar of user/mention
+    example: bina avatar | bina avatar @mention
+    category: utility
+    
+  - name: banner
+    description: Displays the banner of user/mention
+    example: bina banner | bina banner @mention
+    category: utility
+
+  - name: ping
+    description: Shows bot latency.
+    example: bina ping
+    category: utility
+    
+  - name: about
+    description: Shows information about the bot.
+    example: bina about
+    category: utility
+
+  - name: summarize
+    description: Generates a summary of a conversation.
+    example: bina summarize | bina summarize <message_id>
+    category: miscellaneous
+
+slashcommands:
+  - name: ping
+    description: Shows information about the bot.
+    category: utility
+    
+  - name: about
+    description: Shows information about the bot.
+    category: utility
