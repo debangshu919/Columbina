@@ -1,6 +1,25 @@
-def main():
-    print("Hello from columbina!")
+import asyncio
+
+from classes.Client import BotClient
+from configs.env import BOT_TOKEN
+from utils import logger
+
+
+async def main():
+    bot = BotClient()
+    logger.logger.info("Starting bot...")
+    try:
+        await bot.load_extensions()
+        await bot.start(BOT_TOKEN)
+    except KeyboardInterrupt:
+        logger.logger.info("Shutting down bot...")
+    except asyncio.CancelledError:
+        logger.logger.info("Bot connection cancelled, shutting down...")
+    finally:
+        if not bot.is_closed():
+            await bot.close()
+        logger.logger.info("Bot shutdown complete.")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
