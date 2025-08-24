@@ -16,14 +16,14 @@ developer:
 author:
   username: "hanakitty3"
   user_id: "758254880770490378"
-bot_id: "1392161905627500554"
+bot_id: "1407769283148251248"
 server:
   invite: "https://discord.gg/Zupa7pqJK8"
 
 # --- Core Bot Settings ---
 # The prefix used to invoke commands (e.g., !help, ?play).
-prefix: ["skibidi "]
-chatbot_channel_ids: ["1337477436643868694", "1337174889571942430"]
+prefix: ["bina ", "Bina ", "BINA "]
+chatbot_channel_ids: ["1337477436643868694", "1337174889571942430", "1409271241176780902"]
 
 # --- Optional Settings ---
 colors:

@@ -1,0 +1,26 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Test files
+src/test.py
+
+# Secrets
+.env
+.env.example
+
+# Node
+node_modules
+
+# VS Code
+.vscode/
+
+database/*.db
+logs/*.log
