@@ -24,6 +24,11 @@ commands:
     example: bina summarize | bina summarize <message_id>
     category: miscellaneous
 
+  - name: welcome
+    description: Generates a demo welcome card.
+    example: bina welcome | bina welcome @mention
+    category: temporary
+
 slashcommands:
   - name: ping
     description: Shows information about the bot.
