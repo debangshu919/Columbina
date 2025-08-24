@@ -16,23 +16,23 @@ developer:
 author:
   username: "hanakitty3"
   user_id: "758254880770490378"
-bot_id: "1407769283148251248"
+bot_id: "1392161905627500554"
 server:
   invite: "https://discord.gg/Zupa7pqJK8"
 
 # --- Core Bot Settings ---
 # The prefix used to invoke commands (e.g., !help, ?play).
-prefix: ["bina ", "Bina ", "BINA "]
+prefix: ["skibidi "]
 chatbot_channel_ids: ["1337477436643868694", "1337174889571942430"]
 
 # --- Optional Settings ---
 colors:
-  primary: "0x82477e"
-  secondary: "0x8B93d5"
-  info: "0xaaaaaa"
-  warning: "0xf0ad4e"
-  success: "0x22bb33"
-  error: "0xbb2124"
+  primary: [130, 71, 126]
+  secondary: [136, 147, 213]
+  info: [170, 170, 170]
+  warning: [240, 173, 78]
+  success: [34, 187, 51]
+  error: [187, 33, 36]
 
 # The status message the bot will display (e.g., "Playing a game").
 # You can set the type of activity: playing, streaming, listening, watching.
