@@ -1,47 +1,53 @@
-# ---------------------------------------------------------------- #
-#                  Discord Bot Configuration File                  #
-# ---------------------------------------------------------------- #
-# This file stores the non-sensitive configuration for your Discord bot.
-# Sensitive information like your bot token, API keys, and database
-# credentials should be stored in a separate .env file and loaded
-# into your application's environment.
-
-# --- Bot Info ---
-name: "Columbina"
-description: "I'm Columbina, a multi-purpose Discord bot that provides a variety of features with my aesthetic to enhance your server experience. \nOn the other hand, i am also made for people who play genshin."
-version: "1.0.0"
+name: Columbina
+description: "I'm Columbina, a multi-purpose Discord bot that provides a variety of\
+  \ features with my aesthetic to enhance your server experience. \nOn the other hand,\
+  \ i am also made for people who play genshin."
+version: 1.0.1
 developer:
-  username: "chromavisionmusic"
-  user_id: "1063860912173359114"
+  username: chromavisionmusic
+  user_id: '1063860912173359114'
 author:
-  username: "hanakitty3"
-  user_id: "758254880770490378"
-bot_id: "1407769283148251248"
+  username: hanakitty3
+  user_id: '758254880770490378'
+bot_id: '1407769283148251248'
 server:
-  invite: "https://discord.gg/Zupa7pqJK8"
-
-# --- Core Bot Settings ---
-# The prefix used to invoke commands (e.g., !help, ?play).
-prefix: ["bina ", "Bina ", "BINA "]
-chatbot_channel_ids: ["1337477436643868694", "1337174889571942430", "1409271241176780902"]
-
-# --- Optional Settings ---
+  invite: https://discord.gg/Zupa7pqJK8
+prefix:
+- 'bina '
+- 'Bina '
+- 'BINA '
+chatbot_channel_ids:
+- '1337477436643868694'
+- '1337174889571942430'
+- '1409271241176780902'
 colors:
-  primary: [130, 71, 126]
-  secondary: [136, 147, 213]
-  info: [170, 170, 170]
-  warning: [240, 173, 78]
-  success: [34, 187, 51]
-  error: [187, 33, 36]
-
-# The status message the bot will display (e.g., "Playing a game").
-# You can set the type of activity: playing, streaming, listening, watching.
+  primary:
+  - 130
+  - 71
+  - 126
+  secondary:
+  - 136
+  - 147
+  - 213
+  info:
+  - 170
+  - 170
+  - 170
+  warning:
+  - 240
+  - 173
+  - 78
+  success:
+  - 34
+  - 187
+  - 51
+  error:
+  - 187
+  - 33
+  - 36
 activity:
-  name: "Song of the Welkin Moon"
-  type: "listening" # Can be 'playing', 'streaming', 'listening', 'watching'
-
-# --- Logging Configuration (Optional) ---
-# Configure how the bot logs events and errors.
+  name: Song of the Welkin Moon
+  type: listening
 logging:
-  level: "ERROR" # DEBUG, INFO, WARNING, ERROR, CRITICAL
-  file: "logs/discord.log" # The file to write logs to.
+  level: ERROR
+  file: logs/discord.log
