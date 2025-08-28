@@ -25,11 +25,6 @@ jobs:
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
           echo "REPOSITORY=columbina" >> $GITHUB_ENV
           echo "REGISTRY=<AWS_ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com" >> $GITHUB_ENV
-        
-      - name: Install AWS CLI
-        run: |
-            sudo apt-get update
-            sudo apt-get install -y awscli
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
