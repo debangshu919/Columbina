@@ -40,7 +40,7 @@ jobs:
           if not version:
               data = toml.load("pyproject.toml")
               version = data["project"]["version"]
-          print(f"::set-output name=version::{version}")
+          print(f"version={version}" >> $GITHUB_OUTPUT)
           EOF
         env:
           INPUT_TAG_VERSION: ${{ github.event.inputs.tag_version }}

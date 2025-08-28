@@ -15,13 +15,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install toml
+        run: pip install toml
+
       - name: Set Docker image info
         id: image_info
         run: |
-          IMAGE_TAG=$(curl -s \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/jobs" \
-            | jq -r '.jobs[] | select(.name=="Build and Push Docker Image to AWS ECR") | .steps[] | select(.name=="Get version") | .outputs.version')
+          IMAGE_TAG=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
           echo "REPOSITORY=columbina" >> $GITHUB_ENV
           echo "REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com" >> $GITHUB_ENV

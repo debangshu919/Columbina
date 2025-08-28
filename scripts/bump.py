@@ -2,6 +2,7 @@ import toml
 import yaml
 import pathlib
 import sys
+import os
 
 def bump(version: str, message: str) -> str:
     major, minor, patch = map(int, version.split("."))
@@ -44,7 +45,8 @@ def main():
             yaml.safe_dump(config, f, sort_keys=False)
 
     # Output for GitHub Actions
-    print(f"::set-output name=version::{new_version}")
+    with open(os.environ.get('GITHUB_OUTPUT', '/dev/null'), 'a') as f:
+        f.write(f"version={new_version}\n")
 
 if __name__ == "__main__":
     main()
