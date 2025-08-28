@@ -41,6 +41,9 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+        
+      - name: Test
+        run: echo $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - name: Pull Docker image
         run: sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
