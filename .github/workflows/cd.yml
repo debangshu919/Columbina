@@ -46,7 +46,7 @@ jobs:
         run: echo $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - name: Pull Docker image
-        run: sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        run: sudo docker pull ${{ steps.login-ecr.outputs.registry }}/$REPOSITORY:$IMAGE_TAG
 
       - name: Stop existing container
         run: |
@@ -60,4 +60,4 @@ jobs:
           sudo docker run -d --name $REPOSITORY \
             --restart always \
             -p 8000:8000 \
-            $REGISTRY/$REPOSITORY:$IMAGE_TAG
+            ${{ steps.login-ecr.outputs.registry }}/$REPOSITORY:$IMAGE_TAG
