@@ -3,10 +3,10 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
   workflow_dispatch:
     inputs:
       tag_version:
@@ -37,7 +37,7 @@ jobs:
         id: get_version
         run: |
           python - <<EOF
-          import toml, os, sys
+          import toml, os
           version = os.environ.get("INPUT_TAG_VERSION")
           if not version:
               data = toml.load("pyproject.toml")
@@ -46,6 +46,11 @@ jobs:
           EOF
         env:
           INPUT_TAG_VERSION: ${{ github.event.inputs.tag_version }}
+
+      - name: Create .env files from GitHub Secrets
+        run: |
+          echo "${{ secrets.ENV_PRODUCTION }}" > .env.production
+          echo "${{ secrets.ENV_DEVELOPMENT }}" > .env.development
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
