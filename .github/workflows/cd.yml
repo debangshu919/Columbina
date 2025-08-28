@@ -24,7 +24,7 @@ jobs:
             | jq -r '.jobs[] | select(.name=="Build and Push Docker Image to AWS ECR") | .steps[] | select(.name=="Get version") | .outputs.version')
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
           echo "REPOSITORY=columbina" >> $GITHUB_ENV
-          echo "REGISTRY=<AWS_ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com" >> $GITHUB_ENV
+          echo "REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com" >> $GITHUB_ENV
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
