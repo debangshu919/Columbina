@@ -1,3 +1,6 @@
+permissions:
+  contents: write
+
 name: Version Bump
 
 on:
@@ -41,6 +44,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add pyproject.toml config.yaml
           git commit -m "chore: bump version to ${{ steps.bump.outputs.version }}"
-          git push
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }} HEAD:master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
