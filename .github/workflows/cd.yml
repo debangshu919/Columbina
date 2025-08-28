@@ -59,4 +59,5 @@ jobs:
           docker run -d --name $REPOSITORY \
             --restart always \
             -p 8000:8000 \
+            -e COLUMBINA_ENV=production
             ${{ steps.login-ecr.outputs.registry }}/$REPOSITORY:$IMAGE_TAG
