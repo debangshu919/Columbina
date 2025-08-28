@@ -38,18 +38,18 @@ jobs:
           aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $REGISTRY
 
       - name: Pull Docker image
-        run: docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        run: sudo docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - name: Stop existing container
         run: |
           if [ $(docker ps -q -f name=$REPOSITORY) ]; then
-            docker stop $REPOSITORY
-            docker rm $REPOSITORY
+            sudo docker stop $REPOSITORY
+            sudo docker rm $REPOSITORY
           fi
 
       - name: Run new container
         run: |
-          docker run -d --name $REPOSITORY \
+          sudo docker run -d --name $REPOSITORY \
             --restart always \
             -p 8000:8000 \
             $REGISTRY/$REPOSITORY:$IMAGE_TAG
