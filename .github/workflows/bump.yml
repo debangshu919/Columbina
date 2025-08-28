@@ -40,7 +40,7 @@ jobs:
 
           msg = "${{ github.event.head_commit.message }}".lower()
           if "feat" in msg:
-              minor += 1
+              minor +=  1
               patch = 0
           elif "fix" in msg:
               patch += 1
