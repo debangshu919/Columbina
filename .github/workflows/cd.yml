@@ -1,0 +1,48 @@
+name: CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: self-hosted  # runs on your EC2 runner
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set Docker image info
+        id: image_info
+        run: |
+          IMAGE_TAG=$(curl -s \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/jobs" \
+            | jq -r '.jobs[] | select(.name=="Build and Push Docker Image to AWS ECR") | .steps[] | select(.name=="Get version") | .outputs.version')
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          echo "REPOSITORY=columbina" >> $GITHUB_ENV
+          echo "REGISTRY=<AWS_ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com" >> $GITHUB_ENV
+
+      - name: Authenticate Docker to ECR
+        run: |
+          aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $REGISTRY
+
+      - name: Pull Docker image
+        run: docker pull $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      - name: Stop existing container
+        run: |
+          if [ $(docker ps -q -f name=$REPOSITORY) ]; then
+            docker stop $REPOSITORY
+            docker rm $REPOSITORY
+          fi
+
+      - name: Run new container
+        run: |
+          docker run -d --name $REPOSITORY \
+            --restart always \
+            -p 8000:8000 \
+            $REGISTRY/$REPOSITORY:$IMAGE_TAG
