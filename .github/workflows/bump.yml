@@ -1,0 +1,75 @@
+name: Version Bump
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    if: |
+      contains(github.event.head_commit.message, 'fix') || 
+      contains(github.event.head_commit.message, 'feat')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install bump dependencies
+        run: pip install toml pyyaml
+
+      - name: Bump version in pyproject.toml and config.yaml
+        id: bump
+        run: |
+          import toml, yaml
+
+          # --- Load pyproject.toml ---
+          pyproject = toml.load("pyproject.toml")
+          version = pyproject["project"]["version"]
+
+          major, minor, patch = map(int, version.split("."))
+
+          msg = "${{ github.event.head_commit.message }}".lower()
+          if "feat" in msg:
+              minor += 1
+              patch = 0
+          elif "fix" in msg:
+              patch += 1
+
+          new_version = f"{major}.{minor}.{patch}"
+
+          # --- Update pyproject.toml ---
+          pyproject["project"]["version"] = new_version
+          with open("pyproject.toml", "w") as f:
+              toml.dump(pyproject, f)
+
+          # --- Update config.yaml ---
+          with open("config.yaml", "r") as f:
+              config = yaml.safe_load(f)
+
+          if "version" in config:
+              config["version"] = new_version
+          else:
+              config["version"] = new_version  # add if missing
+
+          with open("config.yaml", "w") as f:
+              yaml.safe_dump(config, f, sort_keys=False)
+
+          print(f"::set-output name=version::{new_version}")
+
+      - name: Commit bumped version
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml config.yaml
+          git commit -m "chore: bump version to ${{ steps.bump.outputs.version }}"
+          git push
