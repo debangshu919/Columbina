@@ -24,3 +24,5 @@ node_modules
 
 database/*.db
 logs/*.log
+
+scripts/
