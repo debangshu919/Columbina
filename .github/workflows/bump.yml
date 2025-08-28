@@ -30,7 +30,7 @@ jobs:
       - name: Bump version in pyproject.toml and config.yaml
         id: bump
         run: |
-          python scripts/bump_version.py "${{ github.event.head_commit.message }}"
+          python scripts/bump.py "${{ github.event.head_commit.message }}"
 
       - name: Commit bumped version
         run: |
