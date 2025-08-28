@@ -44,6 +44,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add pyproject.toml config.yaml
           git commit -m "chore: bump version to ${{ steps.bump.outputs.version }}"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }} HEAD:master
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/debangshu919/Columbina.git HEAD:master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
