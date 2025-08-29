@@ -21,3 +21,6 @@ node_modules
 
 # VS Code
 .vscode/
+
+# Temp
+.github/workflows/cd.yml
