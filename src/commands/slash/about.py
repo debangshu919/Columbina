@@ -21,6 +21,7 @@ class SlashAbout(commands.Cog):
         )
         embed.add_field(name="Version", value=f"v{CONFIG['version']}", inline=True)
         embed.add_field(name="Ping", value=f"{latency}ms", inline=True)
+        embed.add_field(name="Commands", value=len(self.bot.commands))
         embed.add_field(name="Written in", value="Python", inline=True)
         embed.add_field(
             name="Author",
@@ -37,6 +38,7 @@ class SlashAbout(commands.Cog):
         )
         embed.set_author(name=CONFIG["name"], icon_url=self.bot.user.avatar.url)
         embed.set_thumbnail(url=self.bot.user.avatar.url)
+        embed.set_image(url=self.bot.user.banner.url if self.bot.user.banner else None)
 
         view = discord.ui.View()
         button = discord.ui.Button(
