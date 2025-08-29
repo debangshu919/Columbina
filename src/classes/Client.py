@@ -14,7 +14,9 @@ class BotClient(commands.Bot):
         intents.presences = True
         intents.message_content = True
         intents.members = True
-        super().__init__(command_prefix=CONFIG["prefix"], intents=intents)
+        super().__init__(
+            command_prefix=CONFIG["prefix"], intents=intents, help_command=None
+        )
 
     async def load_extensions(self):
         base_dir = os.path.join(os.getcwd(), "src")
