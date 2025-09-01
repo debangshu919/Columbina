@@ -7,7 +7,9 @@ from utils import logger
 
 async def main():
     bot = BotClient()
-    logger.logger.info("Starting bot...")
+    with open("banner.txt", "r") as f:
+        print(f.read())
+    logger.logger.info("ℹ️  Starting bot...")
     try:
         await bot.load_extensions()
         await bot.start(BOT_TOKEN)
