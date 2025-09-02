@@ -15,7 +15,7 @@ class SlashBanner(commands.Cog):
         self, ctx: discord.ApplicationContext, user: discord.Member = None
     ):
         member = user or ctx.user
-        user = await self.bot.fetch_user(member.id)
+        user: discord.User = await self.bot.fetch_user(member.id)
         color = CONFIG["colors"]["primary"]
         embed = discord.Embed(
             title=f"{user.display_name}'s avatar",
