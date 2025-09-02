@@ -11,8 +11,11 @@ class SlashBanner(commands.Cog):
         self.bot = bot
 
     @discord.slash_command(name="banner", description="Display your banner")
-    async def banner(self, ctx: discord.ApplicationContext, user: discord.User = None):
-        user = user or ctx.user
+    async def banner(
+        self, ctx: discord.ApplicationContext, user: discord.Member = None
+    ):
+        member = user or ctx.user
+        user = await self.bot.fetch_user(member.id)
         color = CONFIG["colors"]["primary"]
         embed = discord.Embed(
             title=f"{user.display_name}'s avatar",
