@@ -13,7 +13,8 @@ class OnReady(commands.Cog):
     async def on_ready(self):
         await self.bot.change_presence(
             activity=discord.Activity(
-                type=discord.ActivityType.listening, name=CONFIG["activity"]["name"]
+                type=discord.ActivityType.listening,
+                name=f"{CONFIG["activity"]["name"]} | v{CONFIG["version"]}",
             ),
             status=discord.Status.idle,
         )
