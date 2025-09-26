@@ -47,10 +47,6 @@ jobs:
         env:
           INPUT_TAG_VERSION: ${{ github.event.inputs.tag_version }}
 
-      - name: Create .env file from GitHub Secrets
-        run: |
-          echo "${{ secrets.ENV_PRODUCTION }}" > .env.production
-
       - name: Deploy with Docker Hub
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -60,7 +56,7 @@ jobs:
           # Stop and remove existing container if it exists
           docker stop columbina || true
           docker rm columbina || true
-          
+          cd ~/Columbina
           # Login to Docker Hub, pull image, and run container with env file
           echo "$DOCKERHUB_TOKEN" | docker login --username $DOCKERHUB_USERNAME --password-stdin && \
           docker pull $DOCKERHUB_USERNAME/columbina:$IMAGE_TAG && \
