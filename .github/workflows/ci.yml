@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    name: Build and Push Docker Image to AWS ECR
+    name: Build and Push Docker Image to Docker Hub
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
 
@@ -52,23 +52,17 @@ jobs:
           echo "${{ secrets.ENV_PRODUCTION }}" > .env.production
           echo "${{ secrets.ENV_DEVELOPMENT }}" > .env.development
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build, tag, and push Docker image to Amazon ECR
+      - name: Build, tag, and push Docker image to Docker Hub
         env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: columbina
+          REPOSITORY: ${{ secrets.DOCKERHUB_USERNAME }}/columbina
           IMAGE_TAG: ${{ steps.get_version.outputs.version }}
         run: |
-          echo "Building Docker image $REGISTRY/$REPOSITORY:$IMAGE_TAG"
-          docker build --pull -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          echo "Building Docker image $REPOSITORY:$IMAGE_TAG"
+          docker build --pull -t $REPOSITORY:$IMAGE_TAG .
+          docker push $REPOSITORY:$IMAGE_TAG
