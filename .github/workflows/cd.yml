@@ -14,7 +14,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy on AWS EC2
+    name: Deploy to Self-Hosted Runner
     runs-on: self-hosted
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
 
@@ -47,6 +47,10 @@ jobs:
         env:
           INPUT_TAG_VERSION: ${{ github.event.inputs.tag_version }}
 
+      - name: Create .env file from GitHub Secrets
+        run: |
+          echo "${{ secrets.ENV_PRODUCTION }}" > .env.production
+
       - name: Deploy with Docker Hub
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -57,7 +61,7 @@ jobs:
           docker stop columbina || true
           docker rm columbina || true
           
-          # Login to Docker Hub, pull image, and run container (similar to your ECR command)
+          # Login to Docker Hub, pull image, and run container with env file
           echo "$DOCKERHUB_TOKEN" | docker login --username $DOCKERHUB_USERNAME --password-stdin && \
           docker pull $DOCKERHUB_USERNAME/columbina:$IMAGE_TAG && \
-          docker run -d --name columbina -p 8000:8000 -e COLUMBINA_ENV=production $DOCKERHUB_USERNAME/columbina:$IMAGE_TAG
+          docker run -d --name columbina -p 8000:8000 --env-file .env.production $DOCKERHUB_USERNAME/columbina:$IMAGE_TAG
