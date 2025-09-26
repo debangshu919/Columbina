@@ -64,4 +64,4 @@ jobs:
           # Login to Docker Hub, pull image, and run container with env file
           echo "$DOCKERHUB_TOKEN" | docker login --username $DOCKERHUB_USERNAME --password-stdin && \
           docker pull $DOCKERHUB_USERNAME/columbina:$IMAGE_TAG && \
-          docker run -d --name columbina -p 8000:8000 --env-file .env.production $DOCKERHUB_USERNAME/columbina:$IMAGE_TAG
+          docker run -d --name columbina -p 8000:8000 -e COLUMBINA_ENV=production --env-file .env.production $DOCKERHUB_USERNAME/columbina:$IMAGE_TAG
