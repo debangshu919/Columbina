@@ -16,5 +16,6 @@ else:
 # Now you can access vars
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 NEBIUS_API_KEY = os.getenv("NEBIUS_API_KEY")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 print(f"Running in {ENV} mode")
