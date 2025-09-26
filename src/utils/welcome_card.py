@@ -115,7 +115,6 @@ async def generate_welcome_card(
         canvas.paste(chat_icon, (390, 60), chat_icon)
         draw.text((425, 60), status_text, font=font_subtitle, fill=(75, 53, 42))
 
-    canvas.save("assets/card.png")
     image = BytesIO()
     canvas.save(image, "PNG")
     image.seek(0)
