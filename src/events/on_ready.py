@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from configs.config import CONFIG
-from utils import logger
+from utils.logging import logger
 
 
 class OnReady(commands.Cog):
@@ -17,7 +17,7 @@ class OnReady(commands.Cog):
             ),
             status=discord.Status.idle,
         )
-        logger.logger.info(f"✅ {self.bot.user.display_name} is online.")
+        logger.info(f"✅ {self.bot.user.display_name} is online.")
 
 
 def setup(bot: commands.Bot):

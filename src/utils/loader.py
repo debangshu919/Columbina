@@ -1,6 +1,6 @@
 import os
 
-from utils import logger
+from utils.logging import logger
 
 
 async def load_cogs(bot, base_dir: str, package: str):
@@ -20,8 +20,6 @@ async def load_cogs(bot, base_dir: str, package: str):
                 module = f"{package}.{rel_path.replace(os.sep, '.')[:-3]}"
                 try:
                     bot.load_extension(module)
-                    logger.logger.info(
-                        f"✅ Loaded {module.split(".")[0][:-1]}: {module}"
-                    )
+                    logger.info(f"✅ Loaded {module.split(".")[0][:-1]}: {module}")
                 except Exception as e:
-                    logger.logger.error(f"❌ Failed to load {module}: {e}")
+                    logger.error(f"❌ Failed to load {module}: {e}")

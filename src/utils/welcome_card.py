@@ -3,7 +3,7 @@ from urllib.request import urlopen
 
 from PIL import Image, ImageDraw, ImageFont
 
-from utils.logger import logger
+from utils.logging import logger
 from utils.namecard import random_namecard
 
 
@@ -80,7 +80,7 @@ async def generate_welcome_card(
     except Exception as e:
         font_title = ImageFont.load_default()
         font_subtitle = ImageFont.load_default()
-        logger.logger.warning(e)
+        logger.warning(e)
 
     status_color = (128, 128, 128)
     match status:
