@@ -47,17 +47,44 @@ jobs:
         env:
           INPUT_TAG_VERSION: ${{ github.event.inputs.tag_version }}
 
-      - name: Deploy with Docker Hub
+      - name: Deploy with Docker Compose
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           IMAGE_TAG: ${{ steps.get_version.outputs.version }}
         run: |
-          # Stop and remove existing container if it exists
-          docker stop columbina || true
-          docker rm columbina || true
           cd ~/Columbina
-          # Login to Docker Hub, pull image, and run container with env file
-          echo "$DOCKERHUB_TOKEN" | docker login --username $DOCKERHUB_USERNAME --password-stdin && \
-          docker pull $DOCKERHUB_USERNAME/columbina:$IMAGE_TAG && \
-          docker run -d --name columbina -p 8000:8000 -e COLUMBINA_ENV=production --env-file .env.production --restart=unless-stopped $DOCKERHUB_USERNAME/columbina:$IMAGE_TAG
+          
+          # Login to Docker Hub
+          echo "$DOCKERHUB_TOKEN" | docker login --username $DOCKERHUB_USERNAME --password-stdin
+          
+          # Create production docker-compose override
+          cat > docker-compose.prod.yml << EOF
+          version: "3.8"
+          services:
+            columbina:
+              image: $DOCKERHUB_USERNAME/columbina:$IMAGE_TAG
+              environment:
+                - COLUMBINA_ENV=production
+              env_file:
+                - .env.production
+          EOF
+          
+          # Pull the latest image
+          docker pull $DOCKERHUB_USERNAME/columbina:$IMAGE_TAG
+          
+          # Stop existing services gracefully
+          docker-compose -f docker-compose.yaml -f docker-compose.prod.yml down --remove-orphans
+          
+          # Start services with health checks
+          docker-compose -f docker-compose.yaml -f docker-compose.prod.yml up -d
+          
+          # Wait for services to be healthy
+          echo "Waiting for services to start..."
+          timeout 120 bash -c 'until docker-compose -f docker-compose.yaml -f docker-compose.prod.yml ps | grep -q "healthy\|Up"; do sleep 5; done'
+          
+          # Verify deployment
+          docker-compose -f docker-compose.yaml -f docker-compose.prod.yml ps
+          
+          # Clean up old images
+          docker image prune -f
