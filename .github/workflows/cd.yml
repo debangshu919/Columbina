@@ -53,6 +53,9 @@ jobs:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           IMAGE_TAG: ${{ steps.get_version.outputs.version }}
         run: |
+          # Ensure deployment directory exists and copy compose file
+          mkdir -p ~/Columbina
+          cp docker-compose.yaml ~/Columbina/
           cd ~/Columbina
           
           # Login to Docker Hub
