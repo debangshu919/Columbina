@@ -4,7 +4,9 @@ from discord.ext import commands
 from sqlmodel import Session, select
 
 from models.server_model import Server
+from services.cache_service import redis_client
 from services.database_service import engine
+from utils.functions.redis_type_conversions import serialize_for_redis
 from utils.logging import logger
 from utils.welcome_card import generate_welcome_card
 
@@ -40,7 +42,11 @@ class SlashSetup(commands.Cog):
                 server.greetings_message = message
                 session.add(server)
                 session.commit()
+                server = session.exec(statement).one()
 
+            redis_client.hset(
+                f"server:{guild_id}", mapping=serialize_for_redis(server.model_dump())
+            )
             embed = discord.Embed(
                 title="Success",
                 description=f"Greetings configured successfully!\nGreetings messages will be sent to <#{channel_id}>",
