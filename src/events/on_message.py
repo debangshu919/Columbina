@@ -1,8 +1,16 @@
+from venv import logger
+
 import discord
 from discord.ext import commands
+from sqlmodel import Session, select
 
 from configs.config import CONFIG
+from models.server_model import Server
+from services.cache_service import redis_client
+from services.database_service import engine
 from utils.chat import chatbot
+from utils.functions.redis_type_conversions import (deserialize_from_redis,
+                                                    serialize_for_redis)
 
 
 class OnMessage(commands.Cog):
@@ -11,32 +19,83 @@ class OnMessage(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        ALLOWED_CHANNEL_IDS = CONFIG["chatbot_channel_ids"]
-
-        if message.author == self.bot.user:
+        if message.author == self.bot.user or message.author.bot:
             return
 
-        if (f"<@{CONFIG['bot_id']}>" in message.content or message.reference) and str(
-            message.channel.id
-        ) in ALLOWED_CHANNEL_IDS:
-            if message.reference and message.reference.resolved.author == self.bot.user:
-                async with message.channel.typing():
+        try:
+            cache = redis_client.hgetall(f"server:{message.author.guild.id}")
+            if cache:
+                cache_data = deserialize_from_redis(cache)
+                server = Server(**cache_data)
+            else:
+                with Session(engine) as session:
+                    statement = select(Server).where(
+                        Server.server_id == message.author.guild.id
+                    )
+                    server = session.exec(statement).one()
+
+                redis_client.hset(
+                    f"server:{message.author.guild.id}",
+                    mapping=serialize_for_redis(server.model_dump()),
+                )
+
+            if (
+                server.chatbot is False
+                or server.chatbot_channel_id is None
+                or server.chatbot_response is None
+            ):
+                return
+
+            channel_id = server.chatbot_channel_id
+            channel = message.author.guild.get_channel(channel_id)
+
+            if channel is None or message.channel.id != channel_id:
+                return
+
+            if server.chatbot_response == "all":
+                async with channel.typing():
                     response = await chatbot(
                         message.content.strip(),
                         uid=message.author.id,
                         username=message.author.name,
                     )
-            else:
-                async with message.channel.typing():
-                    response = await chatbot(
-                        query=message.content.strip()
-                        .split(f"<@{CONFIG['bot_id']}>")[0]
-                        .strip(),
-                        uid=message.author.id,
-                        username=message.author.name,
-                    )
+                await channel.send(response)
 
-            await message.reply(response)
+            elif server.chatbot_response == "mentions":
+                if (f"<@{CONFIG['bot_id']}>") in message.content:
+                    async with channel.typing():
+                        response = await chatbot(
+                            message.content.strip(),
+                            uid=message.author.id,
+                            username=message.author.name,
+                        )
+                    await channel.send(response)
+            elif server.chatbot_response == "replies":
+                if message.reference and message.reference.resolved.author.id == int(
+                    CONFIG["bot_id"]
+                ):
+                    async with channel.typing():
+                        response = await chatbot(
+                            message.content.strip(),
+                            uid=message.author.id,
+                            username=message.author.name,
+                        )
+                    await channel.send(response)
+            elif server.chatbot_response == "default":
+                if (f"<@{CONFIG['bot_id']}") in message.content or (
+                    message.reference
+                    and message.reference.resolved.author.id == int(CONFIG["bot_id"])
+                ):
+                    async with channel.typing():
+                        response = await chatbot(
+                            message.content.strip(),
+                            uid=message.author.id,
+                            username=message.author.name,
+                        )
+                    await channel.send(response)
+
+        except Exception as e:
+            logger.exception(e)
 
 
 def setup(bot: commands.Bot):

@@ -21,5 +21,5 @@ async def load_cogs(bot, base_dir: str, package: str):
                 try:
                     bot.load_extension(module)
                     logger.info(f"✅ Loaded {module.split(".")[0][:-1]}: {module}")
-                except Exception as e:
-                    logger.error(f"❌ Failed to load {module}: {e}")
+                except Exception:
+                    logger.exception(f"❌ Failed to load {module}")

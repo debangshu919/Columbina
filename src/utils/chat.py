@@ -1,55 +1,16 @@
 import json
-import sqlite3
+import re
 
 from openai import AsyncOpenAI
 
-from configs.config import CONFIG
 from configs.env import NEBIUS_API_KEY
-
-# DATABASE
-conn = sqlite3.connect("databases/chathistory.db")
-c = conn.cursor()
-
-c.execute(
-    """
-    CREATE TABLE IF NOT EXISTS Chat (
-    sl_no INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id TEXT NOT NULL,
-    username TEXT NOT NULL,
-    role TEXT NOT NULL CHECK(role IN ('user','assistant')),
-    content TEXT NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-"""
-)
+from services.memory_service import memory_client
 
 
-def save_to_db(query: str, uid: str, username: str, role: str):
-    c.execute(
-        """
-        INSERT INTO Chat (user_id, username, role, content) VALUES (?, ?, ?, ?)
-    """,
-        (uid, username, role, query),
-    )
-    conn.commit()
-
-
-def fetch_context(limit: int = 50):
-    c.execute(
-        """
-        SELECT role, content 
-        FROM Chat 
-        ORDER BY sl_no DESC 
-        LIMIT ?
-    """,
-        (limit,),
-    )
-
-    rows = c.fetchall()
-
-    messages = [{"role": role, "content": content} for role, content in rows[::-1]]
-
-    return messages
+def remove_discord_tags(text: str) -> str:
+    pattern = r"<[@#&]\d+>"
+    cleaned_text = re.sub(pattern, "", text)
+    return cleaned_text.strip()
 
 
 client = AsyncOpenAI(
@@ -59,15 +20,28 @@ client = AsyncOpenAI(
 with open("CHATBOT_PROMPT.txt", "r") as file:
     SYSTEM_PROMPT = file.read()
 
+CONTEXT_PROMPT = """
+    Context: 
+    {context}
+"""
 
-async def chatbot(query: str, uid: str, username: str):
-    messages = fetch_context(limit=20)
-    messages.insert(
-        0, {"role": "system", "content": SYSTEM_PROMPT}
-    )  # inserts system prompt to the beginning of the list
-    messages.append({"role": "user", "content": query})
 
-    save_to_db(query, uid, username, "user")
+async def chatbot(query: str, uid: int, username: str):
+    query = remove_discord_tags(query)
+    relevant_context = memory_client.search(query=query, user_id=str(uid))
+
+    if not relevant_context.get("results"):
+        context = "No previous context available."
+    else:
+        context = [
+            f"ID: {ctx.get('id')}, Context: {ctx.get('memory')}"
+            for ctx in relevant_context.get("results")
+        ]
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "system", "content": CONTEXT_PROMPT.format(context=context)},
+        {"role": "user", "content": query},
+    ]
 
     response = await client.chat.completions.create(
         model="openai/gpt-oss-20b",
@@ -76,10 +50,19 @@ async def chatbot(query: str, uid: str, username: str):
     )
 
     reply = response.choices[0].message.content
-
-    messages.append({"role": "assistant", "content": reply})
-    save_to_db(query, CONFIG["bot_id"], "Bina", "assistant")
-
     parsed_response = json.loads(reply)
+
+    memory_client.add(
+        messages=[
+            {"role": "user", "content": query},
+            {"role": "assistant", "content": reply},
+        ],
+        user_id=str(uid),
+        metadata={
+            "username": username,
+            "query": query,
+            "response": parsed_response.get("content"),
+        },
+    )
 
     return parsed_response.get("content")

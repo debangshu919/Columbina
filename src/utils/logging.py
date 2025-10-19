@@ -4,7 +4,6 @@ from logging.handlers import RotatingFileHandler
 
 # Create logs directory if not exists
 os.makedirs("logs", exist_ok=True)
-
 logger = logging.getLogger("bot")
 logger.setLevel(logging.INFO)
 
@@ -12,6 +11,7 @@ logger.setLevel(logging.INFO)
 console_handler = logging.StreamHandler()
 console_formatter = logging.Formatter("[%(asctime)s] [%(levelname)s] %(message)s")
 console_handler.setFormatter(console_formatter)
+console_handler.setLevel(logging.DEBUG)
 
 # File handler (rotating log file, 5MB per file, keep 5 backups)
 file_handler = RotatingFileHandler(

@@ -109,7 +109,7 @@ class SlashSetup(commands.Cog):
         response: discord.Option(
             str,
             description="Responds to",
-            choices=["all", "mentions", "replies", "both"],
+            choices=["default", "mentions", "replies", "all"],
         ),
     ):
         guild_id = ctx.guild_id
@@ -126,6 +126,11 @@ class SlashSetup(commands.Cog):
                 server.chatbot_channel_id = channel_id
                 session.add(server)
                 session.commit()
+                server = session.exec(statement).one()
+
+            redis_client.hset(
+                f"server:{guild_id}", mapping=serialize_for_redis(server.model_dump())
+            )
 
             embed = discord.Embed(
                 title="Success",
@@ -152,6 +157,11 @@ class SlashSetup(commands.Cog):
                 server.chatbot = False
                 session.add(server)
                 session.commit()
+                server = session.exec(statement).one()
+
+            redis_client.hset(
+                f"server:{guild_id}", mapping=serialize_for_redis(server.model_dump())
+            )
 
             embed = discord.Embed(
                 title="Success",
@@ -178,6 +188,11 @@ class SlashSetup(commands.Cog):
                 server.greetings = False
                 session.add(server)
                 session.commit()
+                server = session.exec(statement).one()
+
+            redis_client.hset(
+                f"server:{guild_id}", mapping=serialize_for_redis(server.model_dump())
+            )
 
             embed = discord.Embed(
                 title="Success",

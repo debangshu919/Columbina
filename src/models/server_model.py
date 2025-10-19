@@ -17,7 +17,7 @@ class Server(SQLModel, table=True):
     chatbot_channel_id: int | None = Field(
         default=None, sa_column=Column(BigInteger, nullable=True)
     )
-    chatbot_response: str = "mentions"  # all | mentions | replies | both
+    chatbot_response: str = "default"  # all | mentions | replies | default
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc), nullable=False
     )
