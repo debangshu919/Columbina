@@ -20,7 +20,7 @@ async def summarize(context: dict):
     messages.append({"role": "user", "content": str(context)})
 
     response = await client.chat.completions.create(
-        model="mistralai/Mistral-Nemo-Instruct-2407", messages=messages
+        model="Qwen/Qwen3-14B", messages=messages
     )
 
     reply = response.choices[0].message.content
