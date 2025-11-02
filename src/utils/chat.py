@@ -26,7 +26,7 @@ CONTEXT_PROMPT = """
 """
 
 
-async def chatbot(query: str, uid: int, username: str):
+async def chatbot(query: str, uid: int, username: str, ctx: str = None):
     query = remove_discord_tags(query)
     relevant_context = memory_client.search(query=query, user_id=str(uid))
 
@@ -37,11 +37,20 @@ async def chatbot(query: str, uid: int, username: str):
             f"ID: {ctx.get('id')}, Context: {ctx.get('memory')}"
             for ctx in relevant_context.get("results")
         ]
-    messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "system", "content": CONTEXT_PROMPT.format(context=context)},
-        {"role": "user", "content": query},
-    ]
+    if ctx:
+        print("CTX: ", ctx)
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": CONTEXT_PROMPT.format(context=context)},
+            {"role": "assistant", "content": ctx},
+            {"role": "user", "content": query},
+        ]
+    else:
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": CONTEXT_PROMPT.format(context=context)},
+            {"role": "user", "content": query},
+        ]
 
     response = await client.chat.completions.create(
         model="openai/gpt-oss-20b",

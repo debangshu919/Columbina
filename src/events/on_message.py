@@ -79,6 +79,7 @@ class OnMessage(commands.Cog):
                             message.content.strip(),
                             uid=message.author.id,
                             username=message.author.name,
+                            ctx=message.reference.resolved.clean_content,
                         )
                     await channel.send(response)
             elif server.chatbot_response == "default":
@@ -91,6 +92,11 @@ class OnMessage(commands.Cog):
                             message.content.strip(),
                             uid=message.author.id,
                             username=message.author.name,
+                            ctx=(
+                                message.reference.resolved.clean_content
+                                if message.reference
+                                else None
+                            ),
                         )
                     await channel.send(response)
 
