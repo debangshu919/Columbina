@@ -30,6 +30,15 @@ class SlashSetup(commands.Cog):
         guild_id = ctx.guild_id
         channel_id = channel.id
 
+        if ctx.author.guild_permissions.administrator is False:
+            return await ctx.respond(
+                embed=discord.Embed(
+                    color=discord.Color.red(),
+                    description="You don't have permission to use this command.",
+                ),
+                ephemeral=True,
+            )
+
         await ctx.defer()
 
         try:
@@ -115,6 +124,14 @@ class SlashSetup(commands.Cog):
         guild_id = ctx.guild_id
         channel_id = channel.id
 
+        if ctx.author.guild_permissions.administrator is False:
+            return await ctx.respond(
+                embed=discord.Embed(
+                    color=discord.Color.red(),
+                    description="You don't have permission to use this command.",
+                ),
+                ephemeral=True,
+            )
         await ctx.defer()
 
         try:
@@ -149,6 +166,14 @@ class SlashSetup(commands.Cog):
     @disable.command(name="chatbot", description="Disable AI chatbot")
     async def disable_chatbot(self, ctx: discord.ApplicationContext):
         guild_id = ctx.guild_id
+        if ctx.author.guild_permissions.administrator is False:
+            return await ctx.respond(
+                embed=discord.Embed(
+                    color=discord.Color.red(),
+                    description="You don't have permission to use this command.",
+                ),
+                ephemeral=True,
+            )
         await ctx.defer()
         try:
             with Session(engine) as session:
@@ -180,6 +205,14 @@ class SlashSetup(commands.Cog):
     @disable.command(name="greetings", description="Disable greetings")
     async def disable_greetings(self, ctx: discord.ApplicationContext):
         guild_id = ctx.guild_id
+        if ctx.author.guild_permissions.administrator is False:
+            return await ctx.respond(
+                embed=discord.Embed(
+                    color=discord.Color.red(),
+                    description="You don't have permission to use this command.",
+                ),
+                ephemeral=True,
+            )
         await ctx.defer()
         try:
             with Session(engine) as session:
