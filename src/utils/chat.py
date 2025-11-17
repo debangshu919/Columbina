@@ -1,4 +1,5 @@
 import json
+import logging
 import re
 
 from openai import AsyncOpenAI
@@ -12,6 +13,8 @@ def remove_discord_tags(text: str) -> str:
     cleaned_text = re.sub(pattern, "", text)
     return cleaned_text.strip()
 
+
+logger = logging.getLogger(__name__)
 
 client = AsyncOpenAI(
     base_url="https://api.studio.nebius.com/v1/", api_key=NEBIUS_API_KEY
@@ -28,7 +31,11 @@ CONTEXT_PROMPT = """
 
 async def chatbot(query: str, uid: int, username: str, ctx: str = None):
     query = remove_discord_tags(query)
-    relevant_context = memory_client.search(query=query, user_id=str(uid))
+    try:
+        relevant_context = memory_client.search(query=query, user_id=str(uid))
+    except Exception as exc:
+        logger.warning("Memory search failed: %s", exc)
+        relevant_context = {"results": []}
 
     if not relevant_context.get("results"):
         context = "No previous context available."
@@ -61,17 +68,20 @@ async def chatbot(query: str, uid: int, username: str, ctx: str = None):
     reply = response.choices[0].message.content
     parsed_response = json.loads(reply)
 
-    memory_client.add(
-        messages=[
-            {"role": "user", "content": query},
-            {"role": "assistant", "content": reply},
-        ],
-        user_id=str(uid),
-        metadata={
-            "username": username,
-            "query": query,
-            "response": parsed_response.get("content"),
-        },
-    )
+    try:
+        memory_client.add(
+            messages=[
+                {"role": "user", "content": query},
+                {"role": "assistant", "content": reply},
+            ],
+            user_id=str(uid),
+            metadata={
+                "username": username,
+                "query": query,
+                "response": parsed_response.get("content"),
+            },
+        )
+    except Exception as exc:
+        logger.warning("Memory add failed: %s", exc)
 
     return parsed_response.get("content")
