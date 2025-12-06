@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+from classes.Embed import ErrorEmbed
 from configs.config import CONFIG
 
 
@@ -10,24 +11,27 @@ class SlashPing(commands.Cog):
 
     @discord.slash_command(name="ping", description="Check bot latency")
     async def ping(self, ctx: discord.ApplicationContext):
-        latency = round(self.bot.latency * 1000)
+        try:
+            latency = round(self.bot.latency * 1000)
 
-        # Get color based on latency
-        if latency < 500:
-            color = CONFIG["colors"]["success"]
-        else:
-            color = CONFIG["colors"]["warning"]
+            # Get color based on latency
+            if latency < 500:
+                color = CONFIG["colors"]["success"]
+            else:
+                color = CONFIG["colors"]["warning"]
 
-        embed = discord.Embed(
-            title="Pong",
-            color=discord.Color.from_rgb(color[0], color[1], color[2]),
-        )
-        embed.add_field(name="Bot Latency", value=f"```{latency} ms```")
-        embed.set_footer(
-            text=f"Requested by {ctx.author.name}",
-            icon_url=ctx.author.display_avatar.url,
-        )
-        return await ctx.respond(embed=embed)
+            embed = discord.Embed(
+                title="Pong",
+                color=discord.Color.from_rgb(color[0], color[1], color[2]),
+            )
+            embed.add_field(name="Bot Latency", value=f"```{latency} ms```")
+            embed.set_footer(
+                text=f"Requested by {ctx.author.name}",
+                icon_url=ctx.author.display_avatar.url,
+            )
+            return await ctx.respond(embed=embed)
+        except Exception:
+            return await ctx.respond(embed=ErrorEmbed())
 
 
 def setup(bot: commands.Bot):

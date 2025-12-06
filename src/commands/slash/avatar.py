@@ -1,9 +1,7 @@
-import datetime
-
 import discord
 from discord.ext import commands
 
-from configs.config import CONFIG
+from classes import ErrorEmbed, SuccessEmbed
 
 
 class SlashAvatar(commands.Cog):
@@ -17,26 +15,29 @@ class SlashAvatar(commands.Cog):
         user: discord.User = None,
         server: bool = False,
     ):
-        user = user or ctx.user
-        color = CONFIG["colors"]["primary"]
-        embed = discord.Embed(
-            title=f"{user.display_name}'s avatar",
-            color=discord.Color.from_rgb(color[0], color[1], color[2]),
-            timestamp=datetime.datetime.now(),
-        )
-        if server:
-            embed.set_image(
-                url=user.display_avatar.url if user.avatar else user.default_avatar.url
+        try:
+            user = user or ctx.user
+            embed = SuccessEmbed(
+                title=f"{user.display_name}'s avatar",
+                show_timestamp=True,
+                footer_icon=ctx.author.avatar.url,
+                footer_text=f"Requested by {ctx.author.name}",
             )
-        else:
-            embed.set_image(
-                url=user.avatar.url if user.avatar else user.default_avatar.url
-            )
-        embed.set_footer(
-            text=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar.url
-        )
-
-        return await ctx.respond(embed=embed)
+            if server:
+                embed.set_image(
+                    url=(
+                        user.display_avatar.url
+                        if user.avatar
+                        else user.default_avatar.url
+                    )
+                )
+            else:
+                embed.set_image(
+                    url=user.avatar.url if user.avatar else user.default_avatar.url
+                )
+            return await ctx.respond(embed=embed)
+        except Exception:
+            return await ctx.respond(embed=ErrorEmbed("Unable to fetch avatar."))
 
 
 def setup(bot: commands.Bot):

@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+from classes.Embed import ErrorEmbed
 from utils.welcome_card import generate_welcome_card
 
 
@@ -10,30 +11,33 @@ class Welcome(commands.Cog):
 
     @commands.command(name="welcome")
     async def welcome(self, ctx: commands.Context, member: discord.Member = None):
-        member = member or ctx.author
-        status_text = None
-        avatar = await member.display_avatar.read()
-        for activity in member.activities:
-            if isinstance(activity, discord.CustomActivity):
-                status_text = activity.name or None
-        if status_text:
-            image = await generate_welcome_card(
-                name=member.display_name,
-                members_count=member.guild.member_count,
-                status=str(member.status),
-                avatar=avatar,
-                status_text=status_text,
+        try:
+            member = member or ctx.author
+            status_text = None
+            avatar = await member.display_avatar.read()
+            for activity in member.activities:
+                if isinstance(activity, discord.CustomActivity):
+                    status_text = activity.name or None
+            if status_text:
+                image = await generate_welcome_card(
+                    name=member.display_name,
+                    members_count=member.guild.member_count,
+                    status=str(member.status),
+                    avatar=avatar,
+                    status_text=status_text,
+                )
+            else:
+                image = await generate_welcome_card(
+                    name=member.display_name,
+                    members_count=member.guild.member_count,
+                    status=str(member.status),
+                    avatar=avatar,
+                )
+            return await ctx.reply(
+                file=discord.File(fp=image, filename=f"{member.id}-welcome.png")
             )
-        else:
-            image = await generate_welcome_card(
-                name=member.display_name,
-                members_count=member.guild.member_count,
-                status=str(member.status),
-                avatar=avatar,
-            )
-        return await ctx.reply(
-            file=discord.File(fp=image, filename=f"{member.id}-welcome.png")
-        )
+        except Exception:
+            return await ctx.send(embed=ErrorEmbed("Unable to generate welcome card."))
 
 
 def setup(bot: commands.Bot):

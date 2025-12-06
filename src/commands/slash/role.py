@@ -7,6 +7,8 @@ from discord.errors import Forbidden
 from discord.ext import commands
 from discord.role import RoleColours
 
+from classes import ErrorEmbed, SuccessEmbed
+
 
 class SlashRole(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -46,7 +48,12 @@ class SlashRole(commands.Cog):
         ) = False,
     ):
         if not self.is_hex(primary) or (secondary and not self.is_hex(secondary)):
-            return await ctx.respond("❌ Invalid color format.")
+            return await ctx.respond(
+                embed=ErrorEmbed.invalid_input(
+                    message="Invalid color format.",
+                    suggestion="Use a valid hex color code (e.g., `#FF0000`).",
+                )
+            )
         primary = discord.Colour(int(self.format_hex(primary), 16))
         secondary = (
             discord.Colour(int(self.format_hex(secondary), 16)) if secondary else None
@@ -59,13 +66,23 @@ class SlashRole(commands.Cog):
                 await role.edit(
                     colours=RoleColours(primary=primary, secondary=secondary)
                 )
-            return await ctx.respond("✅ Role color changed successfully.")
+            return await ctx.respond(
+                embed=SuccessEmbed(
+                    message=f"Role color changed successfully.\nRole: <@&{role.id}>\nColor: {"`Holographic`" if holographic else f"`{primary}{f" -> {secondary}" if secondary else ""}`"}"
+                )
+            )
         except Forbidden:
             return await ctx.respond(
-                "❌ Failed to change the color of the role:\n> `Missing Permissions`"
+                embed=ErrorEmbed(
+                    title="Missing Permissions",
+                    error="I don't have the required permissions to change the color of the role.",
+                    suggestion="Please make sure my role is above the role you want to change the color of.",
+                )
             )
         except Exception:
-            return await ctx.respond("❌ Failed to change the color of the role.")
+            return await ctx.respond(
+                embed=ErrorEmbed(error="Failed to change the color of the role.")
+            )
 
 
 def setup(bot: commands.Bot):

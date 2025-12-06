@@ -1,5 +1,6 @@
 from discord.ext import commands
 
+from classes.Embed import ErrorEmbed
 from utils.namecard import random_namecard
 
 
@@ -9,7 +10,10 @@ class Namecard(commands.Cog):
 
     @commands.command(name="namecard")
     async def namecard(self, ctx: commands.Context):
-        return await ctx.send(random_namecard())
+        try:
+            return await ctx.send(random_namecard())
+        except Exception:
+            return await ctx.send(embed=ErrorEmbed())
 
 
 def setup(bot: commands.Bot):

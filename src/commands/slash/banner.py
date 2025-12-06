@@ -1,9 +1,7 @@
-import datetime
-
 import discord
 from discord.ext import commands
 
-from configs.config import CONFIG
+from classes import ErrorEmbed, InfoEmbed, PrimaryEmbed
 
 
 class SlashBanner(commands.Cog):
@@ -14,25 +12,24 @@ class SlashBanner(commands.Cog):
     async def banner(
         self, ctx: discord.ApplicationContext, user: discord.Member = None
     ):
-        member = user or ctx.user
-        user: discord.User = await self.bot.fetch_user(member.id)
-        color = CONFIG["colors"]["primary"]
-        embed = discord.Embed(
-            title=f"{user.display_name}'s banner",
-            color=discord.Color.from_rgb(color[0], color[1], color[2]),
-            timestamp=datetime.datetime.now(),
-        )
-        embed.set_image(url=user.banner.url if user.banner else None)
-        embed.set_footer(
-            text=f"Requested by {ctx.author.name}",
-            icon_url=ctx.author.avatar.url if ctx.author.avatar else None,
-        )
+        try:
+            member = user or ctx.user
+            user: discord.User = await self.bot.fetch_user(member.id)
 
-        return (
-            await ctx.respond(embed=embed)
-            if user.banner
-            else await ctx.respond(f"{user.display_name} has no banner.")
-        )
+            if user.banner:
+                embed = PrimaryEmbed(
+                    title=f"{user.display_name}'s banner",
+                    show_timestamp=True,
+                    footer_icon=ctx.author.avatar.url if ctx.author.avatar else None,
+                    footer_text=f"Requested by {ctx.author.name}",
+                )
+                embed.set_image(url=user.banner.url)
+            else:
+                embed = InfoEmbed(message=f"{user.display_name} doesn't have a banner.")
+
+            return await ctx.respond(embed=embed)
+        except Exception:
+            return await ctx.respond(embed=ErrorEmbed("Unable to fetch banner."))
 
 
 def setup(bot: commands.Bot):

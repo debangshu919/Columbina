@@ -3,6 +3,7 @@ from discord.commands.permissions import default_permissions
 from discord.ext import commands
 from sqlmodel import Session, select
 
+from classes import ErrorEmbed, SuccessEmbed
 from models.server_model import Server
 from services.cache_service import redis_client
 from services.database_service import engine
@@ -32,9 +33,9 @@ class SlashSetup(commands.Cog):
 
         if ctx.author.guild_permissions.administrator is False:
             return await ctx.respond(
-                embed=discord.Embed(
-                    color=discord.Color.red(),
-                    description="You don't have permission to use this command.",
+                embed=ErrorEmbed(
+                    title="Missing Permissions",
+                    error="You don't have the required permissions to use this command.",
                 ),
                 ephemeral=True,
             )
@@ -56,10 +57,8 @@ class SlashSetup(commands.Cog):
             redis_client.hset(
                 f"server:{guild_id}", mapping=serialize_for_redis(server.model_dump())
             )
-            embed = discord.Embed(
-                title="Success",
+            embed = SuccessEmbed(
                 description=f"Greetings configured successfully!\nGreetings messages will be sent to <#{channel_id}>",
-                color=discord.Color.green(),
             )
             await ctx.send_followup(embed=embed)
 
@@ -104,9 +103,7 @@ class SlashSetup(commands.Cog):
                 )
 
         except Exception as e:
-            embed = discord.Embed(
-                color=discord.Color.red(), description="Something went wrong..."
-            )
+            embed = ErrorEmbed()
             logger.error(e)
             return await ctx.send_followup(embed=embed)
 
@@ -126,9 +123,9 @@ class SlashSetup(commands.Cog):
 
         if ctx.author.guild_permissions.administrator is False:
             return await ctx.respond(
-                embed=discord.Embed(
-                    color=discord.Color.red(),
-                    description="You don't have permission to use this command.",
+                embed=ErrorEmbed(
+                    title="Missing Permissions",
+                    error="You don't have the required permissions to use this command.",
                 ),
                 ephemeral=True,
             )
@@ -149,17 +146,13 @@ class SlashSetup(commands.Cog):
                 f"server:{guild_id}", mapping=serialize_for_redis(server.model_dump())
             )
 
-            embed = discord.Embed(
-                title="Success",
+            embed = SuccessEmbed(
                 description=f"Chatbot configured successfully!\nYou can interact with the chatbot in <#{channel_id}>",
-                color=discord.Color.green(),
             )
             await ctx.send_followup(embed=embed)
 
         except Exception as e:
-            embed = discord.Embed(
-                color=discord.Color.red(), description="Something went wrong..."
-            )
+            embed = ErrorEmbed()
             logger.error(e)
             return await ctx.send_followup(embed=embed)
 
@@ -168,9 +161,9 @@ class SlashSetup(commands.Cog):
         guild_id = ctx.guild_id
         if ctx.author.guild_permissions.administrator is False:
             return await ctx.respond(
-                embed=discord.Embed(
-                    color=discord.Color.red(),
-                    description="You don't have permission to use this command.",
+                embed=ErrorEmbed(
+                    title="Missing Permissions",
+                    error="You don't have the required permissions to use this command.",
                 ),
                 ephemeral=True,
             )
@@ -188,17 +181,13 @@ class SlashSetup(commands.Cog):
                 f"server:{guild_id}", mapping=serialize_for_redis(server.model_dump())
             )
 
-            embed = discord.Embed(
-                title="Success",
+            embed = SuccessEmbed(
                 description="Chatbot disabled successfully!",
-                color=discord.Color.green(),
             )
             return await ctx.send_followup(embed=embed)
 
         except Exception as e:
-            embed = discord.Embed(
-                color=discord.Color.red(), description="Something went wrong..."
-            )
+            embed = ErrorEmbed()
             logger.error(e)
             return await ctx.send_followup(embed=embed)
 
@@ -207,9 +196,9 @@ class SlashSetup(commands.Cog):
         guild_id = ctx.guild_id
         if ctx.author.guild_permissions.administrator is False:
             return await ctx.respond(
-                embed=discord.Embed(
-                    color=discord.Color.red(),
-                    description="You don't have permission to use this command.",
+                embed=ErrorEmbed(
+                    title="Missing Permissions",
+                    error="You don't have the required permissions to use this command.",
                 ),
                 ephemeral=True,
             )
@@ -227,17 +216,13 @@ class SlashSetup(commands.Cog):
                 f"server:{guild_id}", mapping=serialize_for_redis(server.model_dump())
             )
 
-            embed = discord.Embed(
-                title="Success",
+            embed = SuccessEmbed(
                 description="Greetings disabled successfully!",
-                color=discord.Color.green(),
             )
             return await ctx.send_followup(embed=embed)
 
         except Exception as e:
-            embed = discord.Embed(
-                color=discord.Color.red(), description="Something went wrong..."
-            )
+            embed = ErrorEmbed()
             logger.error(e)
             return await ctx.send_followup(embed=embed)
 

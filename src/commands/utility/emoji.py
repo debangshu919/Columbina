@@ -1,8 +1,8 @@
 import re
 
-import discord
 from discord.ext import commands
 
+from classes.Embed import ErrorEmbed, PrimaryEmbed
 from configs.config import CONFIG
 
 
@@ -12,13 +12,10 @@ class Emoji(commands.Cog):
 
     @commands.command(name="emoji")
     async def emoji(self, ctx: commands.Context, emj: str = None):
-        embed = discord.Embed()
         if emj is None:
-            embed.title = "Error"
-            embed.description = (
-                f"Please provide an emoji!\nUsage: `{CONFIG["prefix"][0]}emoji <emoji>`"
+            embed = ErrorEmbed(
+                error=f"Please provide an emoji!\nUsage: `{CONFIG["prefix"][0]}emoji <emoji>`"
             )
-            embed.color = discord.Color.red()
         else:
             try:
                 custom_emoji = re.match(r"<a?:(\w+):(\d+)>", emj)
@@ -31,21 +28,19 @@ class Emoji(commands.Cog):
                     emoji_url = (
                         f"https://cdn.discordapp.com/emojis/{emoji_id}.{extension}"
                     )
-                    color = CONFIG["colors"]["primary"]
-                    embed.title = "Enlarged Emoji"
-                    embed.description = f"Emoji: `{emoji_name}`"
+                    embed = PrimaryEmbed(
+                        title="Enlarged Emoji",
+                        description=f"Emoji: `{emoji_name}`",
+                        footer_text=f"Emoji ID: {emoji_id}",
+                    )
                     embed.set_image(url=emoji_url)
-                    embed.set_footer(text=f"Emoji ID: {emoji_id}")
-                    embed.color = discord.Color.from_rgb(color[0], color[1], color[2])
 
                 else:
-                    embed.title = "Error"
-                    embed.description = f"Please provide a valid emoji (not discord emojis)\nUsage: `{CONFIG["prefix"][0]}emoji <emoji>`"
-                    embed.color = discord.Color.red()
+                    embed = ErrorEmbed(
+                        error=f"Please provide a valid emoji (not discord emojis)\nUsage: `{CONFIG["prefix"][0]}emoji <emoji>`"
+                    )
             except Exception as e:
-                embed.title = "Error"
-                embed.description = "Something went wrong..."
-                embed.color = discord.Color.red()
+                embed = ErrorEmbed()
                 print(e)
                 return await ctx.send(embed=embed)
 

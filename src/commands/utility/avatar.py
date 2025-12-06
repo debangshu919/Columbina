@@ -1,9 +1,7 @@
-import datetime
-
 import discord
 from discord.ext import commands
 
-from configs.config import CONFIG
+from classes import ErrorEmbed, SuccessEmbed
 
 
 class Avatar(commands.Cog):
@@ -12,20 +10,20 @@ class Avatar(commands.Cog):
 
     @commands.command(name="avatar")
     async def avatar(self, ctx: commands.Context, member: discord.Member = None):
-        member = member or ctx.author
-        color = CONFIG["colors"]["primary"]
-        embed = discord.Embed(
-            title=f"{member.display_name}'s avatar",
-            color=discord.Color.from_rgb(color[0], color[1], color[2]),
-            timestamp=datetime.datetime.now(),
-        )
-        embed.set_image(
-            url=member.avatar.url if member.avatar else member.default_avatar.url
-        )
-        embed.set_footer(
-            text=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar.url
-        )
-        return await ctx.send(embed=embed)
+        try:
+            member = member or ctx.author
+            embed = SuccessEmbed(
+                title=f"{member.display_name}'s avatar",
+                show_timestamp=True,
+                footer_icon=ctx.author.avatar.url,
+                footer_text=f"Requested by {ctx.author.name}",
+            )
+            embed.set_image(
+                url=member.avatar.url if member.avatar else member.default_avatar.url
+            )
+            return await ctx.send(embed=embed)
+        except Exception:
+            return await ctx.send(embed=ErrorEmbed("Unable to fetch avatar."))
 
 
 def setup(bot: commands.Bot):
