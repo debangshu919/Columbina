@@ -45,14 +45,16 @@ class SlashSetup(commands.Cog):
         try:
             with Session(engine) as session:
                 statement = select(Server).where(Server.server_id == guild_id)
-                server = session.exec(statement).one()
+                server = session.exec(statement).one_or_none()
+                if server is None:
+                    server = Server(server_id=guild_id)
                 server.greetings = True
                 server.greetings_card = card
                 server.greetings_channel_id = channel_id
                 server.greetings_message = message
                 session.add(server)
                 session.commit()
-                server = session.exec(statement).one()
+                session.refresh(server)
 
             redis_client.hset(
                 f"server:{guild_id}", mapping=serialize_for_redis(server.model_dump())
@@ -134,13 +136,15 @@ class SlashSetup(commands.Cog):
         try:
             with Session(engine) as session:
                 statement = select(Server).where(Server.server_id == guild_id)
-                server = session.exec(statement).one()
+                server = session.exec(statement).one_or_none()
+                if server is None:
+                    server = Server(server_id=guild_id)
                 server.chatbot = True
                 server.chatbot_response = response
                 server.chatbot_channel_id = channel_id
                 session.add(server)
                 session.commit()
-                server = session.exec(statement).one()
+                session.refresh(server)
 
             redis_client.hset(
                 f"server:{guild_id}", mapping=serialize_for_redis(server.model_dump())
@@ -171,11 +175,13 @@ class SlashSetup(commands.Cog):
         try:
             with Session(engine) as session:
                 statement = select(Server).where(Server.server_id == guild_id)
-                server = session.exec(statement).one()
+                server = session.exec(statement).one_or_none()
+                if server is None:
+                    server = Server(server_id=guild_id)
                 server.chatbot = False
                 session.add(server)
                 session.commit()
-                server = session.exec(statement).one()
+                session.refresh(server)
 
             redis_client.hset(
                 f"server:{guild_id}", mapping=serialize_for_redis(server.model_dump())
@@ -206,11 +212,13 @@ class SlashSetup(commands.Cog):
         try:
             with Session(engine) as session:
                 statement = select(Server).where(Server.server_id == guild_id)
-                server = session.exec(statement).one()
+                server = session.exec(statement).one_or_none()
+                if server is None:
+                    server = Server(server_id=guild_id)
                 server.greetings = False
                 session.add(server)
                 session.commit()
-                server = session.exec(statement).one()
+                session.refresh(server)
 
             redis_client.hset(
                 f"server:{guild_id}", mapping=serialize_for_redis(server.model_dump())
