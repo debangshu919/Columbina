@@ -60,7 +60,7 @@ class SlashSetup(commands.Cog):
                 f"server:{guild_id}", mapping=serialize_for_redis(server.model_dump())
             )
             embed = SuccessEmbed(
-                description=f"Greetings configured successfully!\nGreetings messages will be sent to <#{channel_id}>",
+                message=f"Greetings configured successfully!\nGreetings messages will be sent to <#{channel_id}>",
             )
             await ctx.send_followup(embed=embed)
 
@@ -151,7 +151,7 @@ class SlashSetup(commands.Cog):
             )
 
             embed = SuccessEmbed(
-                description=f"Chatbot configured successfully!\nYou can interact with the chatbot in <#{channel_id}>",
+                message=f"Chatbot configured successfully!\nYou can interact with the chatbot in <#{channel_id}>",
             )
             await ctx.send_followup(embed=embed)
 
@@ -188,7 +188,7 @@ class SlashSetup(commands.Cog):
             )
 
             embed = SuccessEmbed(
-                description="Chatbot disabled successfully!",
+                message="Chatbot disabled successfully!",
             )
             return await ctx.send_followup(embed=embed)
 
@@ -225,7 +225,7 @@ class SlashSetup(commands.Cog):
             )
 
             embed = SuccessEmbed(
-                description="Greetings disabled successfully!",
+                message="Greetings disabled successfully!",
             )
             return await ctx.send_followup(embed=embed)
 
