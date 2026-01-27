@@ -32,7 +32,7 @@ class OnMessage(commands.Cog):
                     statement = select(Server).where(
                         Server.server_id == message.author.guild.id
                     )
-                    server = session.exec(statement).one()
+                    server = session.exec(statement).first()
 
                 redis_client.hset(
                     f"server:{message.author.guild.id}",
